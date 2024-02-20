@@ -9,6 +9,7 @@ import { BadRequest, ForbiddenError, NotFound, UnAuthenticatedError } from "./ut
 import { userRoutes } from "./routehandlers/userRoutes"
 import { productRoutes } from "./routehandlers/productRoutes"
 import { categoryRoutes } from "./routehandlers/categoryRoutes"
+import "./config/firebase"
 
 const app = express()
 const port = process.env.PORT || 3000
