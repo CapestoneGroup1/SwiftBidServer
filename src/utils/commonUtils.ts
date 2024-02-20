@@ -7,3 +7,7 @@ export const generateOtp = () => {
 
   return otp
 }
+
+export const isUserRoleAdmin = (role: string) => {
+  return role && role.toLowerCase() === "admin"
+}

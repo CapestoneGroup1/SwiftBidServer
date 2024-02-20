@@ -1,43 +1,38 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+import mongoose from "mongoose"
+var Schema = mongoose.Schema
 var products = new Schema({
-  id:{
-    type:String,
-    required:true,
-    unique:true
-  },
   name: {
     type: String,
-    required: true
+    required: true,
   },
   description: {
     type: String,
-    required: true
+    required: true,
   },
   price: {
     type: String,
-    required: true
+    required: true,
   },
   imageurl: {
     type: String,
-    required: true
+    required: true,
   },
   category: {
     type: Schema.Types.ObjectId,
-    required: true
+    required: true,
   },
   userid: {
     type: Schema.Types.ObjectId,
-    required: true
+    required: true,
   },
   status: {
-    type: Boolean
+    type: Boolean,
   },
   bidenddate: {
-    type: Date
+    type: Date,
   },
   adminapproval: {
-    type: Boolean
-  }
-});
+    type: Boolean,
+  },
+})
 export const ProductSchema = mongoose.model("Products", products)

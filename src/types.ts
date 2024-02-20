@@ -46,3 +46,6 @@ export interface Product {
   bidenddate?: Date; 
   adminapproval?: boolean; 
 }
+export interface AddCategoryRequest {
+  name: string
+}

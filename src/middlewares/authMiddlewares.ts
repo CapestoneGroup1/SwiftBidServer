@@ -30,7 +30,9 @@ export const validateToken = async (req: CustomRequest, res: Response, next: Nex
     if (!payload) {
       throw new UnAuthenticatedError("Session Expired/Invalid")
     }
+    const userDetails = await getUserProfile(payload.id);
     req.userId = payload.id
+    req.user = userDetails as User;
     next()
   } catch (error) {
     next(error)

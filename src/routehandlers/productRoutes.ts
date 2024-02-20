@@ -1,13 +1,11 @@
 import express from "express"
 import { ProductController } from "../controllers/ProductController"
-import multer from "multer";
-
-
-const upload = multer({storage: multer.memoryStorage()})
+import { upload } from "../config/MulterConfig"
+import { validateToken } from "../middlewares/authMiddlewares"
 const router = express.Router()
-router.post("/add", upload.single("file"),ProductController.addProduct)
 
-router.post("/update", ProductController.updateProduct)
+router.post("/add", validateToken, upload.single("file"), ProductController.addProduct)
 
+router.post("/update", validateToken, upload.single("file"), ProductController.updateProduct)
 
 export const productRoutes = router
