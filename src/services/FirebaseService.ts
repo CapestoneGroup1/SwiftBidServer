@@ -28,10 +28,13 @@ export class FirebaseService {
     return FirebaseService.instance
   }
 
-  async saveFileToFirebase(buffer: Buffer, reference: string): Promise<string | null> {
+  async saveFileToFirebase(buffer: Buffer, reference: string, contentType: string): Promise<string | null> {
     try {
-        this.storageRef = ref(this.storage, reference);
-      const uploadTaskSnapShot = await uploadBytesResumable(this.storageRef, buffer)
+      const storageref = ref(this.storage, reference);
+      const metadata = {
+        contentType: contentType
+      };
+      const uploadTaskSnapShot = await uploadBytesResumable(storageref, buffer, metadata)
       const url = await getDownloadURL(uploadTaskSnapShot.ref)
       return url
     } catch (error) {

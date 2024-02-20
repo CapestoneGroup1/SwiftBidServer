@@ -12,13 +12,13 @@ export class ProductController {
       // Extract product data from the request body
       const { name, description, price, category, bidenddate } = req.body as Product
 
-      const file = req.file
+      const file = req?.file
       if (!file) {
         throw new BadRequest("Please upload an image")
       }
 
       const firebaseService = FirebaseService.initialize()
-      const firebaseImageUrl = await firebaseService.saveFileToFirebase(file.buffer, `${req.userId}-${new Date().getTime()}`)
+      const firebaseImageUrl = await firebaseService.saveFileToFirebase(file.buffer, `${req.userId}-${new Date().getTime()}`, file.mimetype)
 
       if (!firebaseImageUrl) {
         throw new BadRequest("Failed to Upload Image Try again...")
@@ -56,7 +56,7 @@ export class ProductController {
       let imageUrl
       if (file) {
         const firebaseService = FirebaseService.initialize()
-        imageUrl = await firebaseService.saveFileToFirebase(file.buffer, `${req.userId}-${new Date().getTime()}`)
+        imageUrl = await firebaseService.saveFileToFirebase(file.buffer, `${req.userId}-${new Date().getTime()}`, file.mimetype)
       }
 
       // Find and update the product by ID
