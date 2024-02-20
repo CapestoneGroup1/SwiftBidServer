@@ -7,6 +7,10 @@ import dotenv from "dotenv"
 import { userAuthRoutes } from "./routehandlers/userAuthRoutes"
 import { BadRequest, ForbiddenError, NotFound, UnAuthenticatedError } from "./utils/exceptions"
 import { userRoutes } from "./routehandlers/userRoutes"
+import { productRoutes } from "./routehandlers/productRoutes"
+import { categoryRoutes } from "./routehandlers/categoryRoutes"
+import "./config/firebase"
+import { FirebaseService } from "./services/FirebaseService"
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -24,6 +28,8 @@ app.get("/healthCheck", (req: Request, res: Response) => {
 
 app.use("/auth", userAuthRoutes)
 app.use("/user", userRoutes)
+app.use("/product", productRoutes)
+app.use("/category", categoryRoutes)
 
 /**
  * Global Error Handler for complete app.
@@ -43,6 +49,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 })
 
 // Initializations..
+FirebaseService.initialize()
 EmailConfig.initialize()
 MongoClient.initialize()
   .then(() => {

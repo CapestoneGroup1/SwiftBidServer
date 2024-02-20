@@ -33,3 +33,19 @@ export interface SignUpRequest {
   email: string
   password: string
 }
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: string;
+  imageurl: string;
+  category: string; 
+  userid: string; 
+  status?: boolean; 
+  bidenddate?: Date; 
+  adminapproval?: boolean; 
+}
+export interface AddCategoryRequest {
+  name: string
+}
