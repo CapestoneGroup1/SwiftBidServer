@@ -32,7 +32,7 @@ var products = new Schema({
     type: Date,
   },
   adminapproval: {
-    type: Boolean,
+    type: String,
   },
 })
 export const ProductSchema = mongoose.model("Products", products)

@@ -1,18 +1,18 @@
 import { NextFunction, Request, Response } from "express"
 import { CategoryModel } from "../models/category"
 import { BadRequest, NotFound } from "../utils/exceptions"
-import { AddCategoryRequest } from "../types";
+import { AddCategoryRequest } from "../types"
 export class CategoryController {
   static async addCategory(req: Request, res: Response, next: NextFunction) {
     try {
       // Extract product data from the request body
-      const { name } = req.body || {} as AddCategoryRequest;
+      const { name } = req.body || ({} as AddCategoryRequest)
       if (!name) {
         throw new BadRequest("Invalid Category Name")
       }
 
       const existingCategory = await CategoryModel.findOne({ name })
-      if(existingCategory?._id) {
+      if (existingCategory?._id) {
         throw new BadRequest("Category Already Exists")
       }
 
@@ -44,6 +44,15 @@ export class CategoryController {
       await CategoryModel.deleteOne({ id })
 
       res.status(200).json({ message: "Category deleted successfully", category: categoryToDelete })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  static async getAllCategories(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await CategoryModel.find({})
+      res.status(200).json(data)
     } catch (error) {
       next(error)
     }

@@ -20,13 +20,26 @@ export class EmailConfig {
     return EmailConfig.twilioEmailClient
   }
 
-  static async sendEmail(mail: string, subject: string, text: string): Promise<any> {
+  static async sendEmail(
+    mail: string,
+    subject: string,
+    text?: string,
+    html?: string,
+  ): Promise<any> {
     const msg = {
       to: mail,
       from: process.env.SENDGRID_FROM_MAIL || "",
       subject,
-      text,
+    } as any
+
+    if (text) {
+      msg.text = text
     }
+
+    if (html) {
+      msg.html = html
+    }
+
     const response = await EmailConfig.getEmailClient().send(msg)
     return response
   }
