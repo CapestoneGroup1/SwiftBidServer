@@ -35,17 +35,22 @@ export interface SignUpRequest {
 }
 
 export interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: string;
-  imageurl: string;
-  category: string; 
-  userid: string; 
-  status?: boolean; 
-  bidenddate?: Date; 
-  adminapproval?: boolean; 
+  id: string
+  name: string
+  description: string
+  price: string
+  imageurl: string
+  category: string
+  userid: string
+  status?: boolean
+  bidenddate?: Date
+  adminapproval?: boolean
 }
 export interface AddCategoryRequest {
   name: string
+}
+
+export interface ApproveRejectPRoduct {
+  id: string
+  rejectReason: string
 }

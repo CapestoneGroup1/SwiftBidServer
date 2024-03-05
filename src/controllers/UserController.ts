@@ -21,7 +21,7 @@ export class UserController {
       }
       const { username, email, mobile, address, province, city, postalcode } = userDetails
 
-      return res.json({ username, email, mobile, address, province, city, postalcode })
+      return res.json({ username, email, mobile, address, province, city, postalcode, id: userDetails._id })
     } catch (error) {
       next(error)
     }
