@@ -29,6 +29,7 @@ export class AuthController {
     try {
       const { email, password } = req.body
 
+      console.log(email,password);
       const user = await UserModel.findOne({ email })
 
       if (!user) {
@@ -44,6 +45,7 @@ export class AuthController {
         token: JwtHelper.createToken({ id: user._id }),
       })
     } catch (error) {
+      console.log(error);
       return res.status(500).json({ error: "Internal server error" })
     }
   }

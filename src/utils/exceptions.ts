@@ -33,3 +33,11 @@ export class ForbiddenError extends Error {
     this.statusCode = 403
   }
 }
+export class InternalServerError extends Error {
+  statusCode: number;
+  constructor(message: string) {
+    super(message);
+    this.name = "InternalServerError";
+    this.statusCode = 500;
+  }
+}

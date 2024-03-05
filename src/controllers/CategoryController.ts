@@ -24,6 +24,7 @@ export class CategoryController {
         name: savedCategory.name,
       })
     } catch (error) {
+      console.log(error);
       next(error)
     }
   }
@@ -34,7 +35,7 @@ export class CategoryController {
       const { id } = req.body
 
       // Find the category by ID
-      const categoryToDelete = await CategoryModel.findOne({ id })
+      const categoryToDelete = await CategoryModel.findById(id)
 
       if (!categoryToDelete) {
         throw new NotFound("Category not found")

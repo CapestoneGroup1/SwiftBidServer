@@ -2,11 +2,37 @@ import { NextFunction, Request, Response } from "express"
 import { ProductSchema } from "../models/product"
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage"
 import { CustomRequest, Product } from "../types"
-import { BadRequest } from "../utils/exceptions"
+import { BadRequest,InternalServerError,NotFound } from "../utils/exceptions"
 import { FirebaseService } from "../services/FirebaseService"
 import { isUserRoleAdmin } from "../utils/commonUtils"
 
 export class ProductController {
+
+
+  static async getAllProducts(req: CustomRequest, res: Response, next: NextFunction){
+    try {
+     
+      const products = await ProductSchema.find();
+     
+      res.status(200).json(products);
+    } catch (error) {
+      
+      throw new InternalServerError("An unexpected error occurred.");
+    }
+  }
+
+  static async getProductByUserId(req: CustomRequest, res: Response, next: NextFunction){
+    try {
+      const userId = req.userId;
+
+      // Find all products belonging to the specified user
+      const products = await ProductSchema.find({ userid: userId });
+
+      res.status(200).json(products || []);
+    } catch (error) {
+      throw new InternalServerError("An unexpected error occurred.");
+    }
+  }
   static async addProduct(req: CustomRequest, res: Response, next: NextFunction) {
     try {
       // Extract product data from the request body

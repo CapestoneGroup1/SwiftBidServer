@@ -18,7 +18,7 @@ const port = process.env.PORT || 3000
 dotenv.config()
 
 app.use(express.static("public"))
-app.use(bodyParser.json())
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
 
@@ -42,8 +42,10 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     err instanceof ForbiddenError ||
     err instanceof UnAuthenticatedError
   ) {
+    console.log(err)
     res.status(err.statusCode).json({ error: err.message })
   } else {
+    console.log(err)
     res.status(500).json({ error: "Internal Server Error" })
   }
 })
@@ -53,7 +55,7 @@ FirebaseService.initialize()
 EmailConfig.initialize()
 MongoClient.initialize()
   .then(() => {
-    app.listen(3000, () => console.log("App is listening on port " + port))
+    app.listen(3000, () => console.log("App is listening on port 3000 " + port))
   })
   .catch((error) => {
     console.error("Faile to start Server", error)
