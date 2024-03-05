@@ -19,9 +19,9 @@ export class UserController {
       if (!userDetails) {
         throw new BadRequest("User doesnt Exist")
       }
-      const { username, email, mobile, address, province, city, postalcode } = userDetails
+      const { username, email, mobile, address, province, city, postalcode, role } = userDetails
 
-      return res.json({ username, email, mobile, address, province, city, postalcode, id: userDetails._id })
+      return res.json({ username, email, mobile, address, province, city, postalcode, id: userDetails._id, role })
     } catch (error) {
       next(error)
     }

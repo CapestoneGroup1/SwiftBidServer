@@ -15,8 +15,8 @@ router.get(
 router.post("/approveproduct", validateToken, isUserAdmin, ProductController.approveProduct)
 router.post("/rejectproduct", validateToken, isUserAdmin, ProductController.rejectProduct)
 
-router.get("/",validateToken,ProductController.getAllProducts)
+router.get("/", validateToken, ProductController.getAllProducts)
 
-router.get("/userId",validateToken,ProductController.getProductByUserId)
+router.get("/userId", validateToken, ProductController.getProductByUserId)
 
 export const productRoutes = router

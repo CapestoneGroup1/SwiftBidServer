@@ -20,10 +20,12 @@ var products = new Schema({
   category: {
     type: Schema.Types.ObjectId,
     required: true,
+    ref: "category"
   },
   userid: {
     type: Schema.Types.ObjectId,
     required: true,
+    ref: "swiftbiduser"
   },
   status: {
     type: Boolean,

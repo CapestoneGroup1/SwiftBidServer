@@ -82,6 +82,10 @@ export class ProductController {
         throw new BadRequest("Invalid Product Id")
       }
 
+      if (existingProduct.userid.toString() !== req.userId) {
+        throw new BadRequest("Access denied to update other users produts")
+      }
+
       //TODO stop updating the product if there are any ongoing bids on the product.. handled in next sprint.
 
       const file = req.file
@@ -124,6 +128,11 @@ export class ProductController {
       const data = await ProductSchema.find({
         adminapproval: "PENDING",
       })
+        .populate({
+          path: "userid",
+          select: "-password -otp", // Exclude password and otp fields
+        })
+        .populate("category")
       res.status(200).json(data)
     } catch (error) {
       next(error)
