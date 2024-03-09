@@ -11,6 +11,8 @@ import { productRoutes } from "./routehandlers/productRoutes"
 import { categoryRoutes } from "./routehandlers/categoryRoutes"
 import "./config/firebase"
 import { FirebaseService } from "./services/FirebaseService"
+import { bidRoutes } from "./routehandlers/bidRoutes"
+import { adminRoutes } from "./routehandlers/adminRoutes"
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -30,6 +32,9 @@ app.use("/auth", userAuthRoutes)
 app.use("/user", userRoutes)
 app.use("/product", productRoutes)
 app.use("/category", categoryRoutes)
+app.use("/bids", bidRoutes)
+app.use("/admin", adminRoutes)
+
 
 /**
  * Global Error Handler for complete app.

@@ -1,5 +1,6 @@
 import mongoose from "mongoose"
 var Schema = mongoose.Schema
+
 var products = new Schema({
   name: {
     type: String,
@@ -10,7 +11,7 @@ var products = new Schema({
     required: true,
   },
   price: {
-    type: String,
+    type: Number,
     required: true,
   },
   imageurl: {
@@ -20,21 +21,24 @@ var products = new Schema({
   category: {
     type: Schema.Types.ObjectId,
     required: true,
-    ref: "category"
+    ref: "category",
   },
   userid: {
     type: Schema.Types.ObjectId,
     required: true,
-    ref: "swiftbiduser"
-  },
-  status: {
-    type: Boolean,
+    ref: "swiftbiduser",
   },
   bidenddate: {
     type: Date,
   },
   adminapproval: {
-    type: String,
+    type: String, // PENDING / APPROVED / REJECTED / BIDDING / SOLD
   },
+  bids: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Bid",
+    },
+  ],
 })
 export const ProductSchema = mongoose.model("Products", products)

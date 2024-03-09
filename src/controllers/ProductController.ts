@@ -14,7 +14,11 @@ export class ProductController {
   static async getAllProducts(req: CustomRequest, res: Response, next: NextFunction){
     try {
      
-      const products = await ProductSchema.find();
+      const products = await ProductSchema.find({
+        adminapproval: {
+          $in: ['APPROVED', 'BIDDING']
+        }
+      });      
      
       res.status(200).json(products);
     } catch (error) {

@@ -51,3 +51,16 @@ export const isUserAdmin = async (req: CustomRequest, res: Response, next: NextF
     next(error)
   }
 }
+
+export const isUserNotAdmin = async (req: CustomRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId = "" } = req
+    const userDetails = await getUserProfile(userId)
+    if (!userDetails || userDetails.role.toLowerCase() === "admin") {
+      throw new ForbiddenError("Admin Account cannot place bids")
+    }
+    next()
+  } catch (error) {
+    next(error)
+  }
+}
