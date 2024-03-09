@@ -50,6 +50,11 @@ export interface AddCategoryRequest {
   name: string
 }
 
+export interface EditCategoryRequest {
+  name: string
+  id: string
+}
+
 export interface ApproveRejectPRoduct {
   id: string
   rejectReason: string

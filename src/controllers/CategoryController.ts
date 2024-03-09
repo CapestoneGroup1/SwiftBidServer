@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express"
 import { CategoryModel } from "../models/category"
 import { BadRequest, NotFound } from "../utils/exceptions"
-import { AddCategoryRequest } from "../types"
+import { AddCategoryRequest, CustomRequest, EditCategoryRequest } from "../types"
 export class CategoryController {
-  static async addCategory(req: Request, res: Response, next: NextFunction) {
+  static async addCategory(req: CustomRequest, res: Response, next: NextFunction) {
     try {
       // Extract product data from the request body
       const { name } = req.body || ({} as AddCategoryRequest)
@@ -19,12 +19,35 @@ export class CategoryController {
       // Create a new category instance
       const newCategory = new CategoryModel({ name })
       const savedCategory = await newCategory.save()
-      res.status(201).json({
-        id: savedCategory._id,
-        name: savedCategory.name,
-      })
+      res.status(201).json(savedCategory.toJSON())
     } catch (error) {
-      console.log(error);
+      console.log(error)
+      next(error)
+    }
+  }
+
+  static async editCategory(req: CustomRequest, res: Response, next: NextFunction) {
+    try {
+      const { name, id } = req.body as EditCategoryRequest
+      if (!name || !id) {
+        throw new BadRequest("Invalid Category Id/Name")
+      }
+
+      const details = await CategoryModel.findByIdAndUpdate(
+        id,
+        {
+          name: name,
+        },
+        { new: true },
+      )
+
+      if (!details) {
+        throw new BadRequest("Invalid Category Id/Name")
+      }
+
+      res.status(201).json(details.toJSON())
+    } catch (error) {
+      console.log(error)
       next(error)
     }
   }
