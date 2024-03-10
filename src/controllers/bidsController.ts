@@ -51,10 +51,6 @@ export class BidController {
         userid: req.user?.id,
       })
 
-      ProductSchema.findByIdAndUpdate(productid, {
-        adminapproval: "BIDDING",
-      })
-
       return res.json(bidDetails.toJSON())
     } catch (error) {
       next(error)

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import { ProductSchema } from "../models/product"
 import { ApproveRejectPRoduct, CustomRequest, Product } from "../types"
-import { BadRequest,InternalServerError,NotFound } from "../utils/exceptions"
+import { BadRequest, InternalServerError, NotFound } from "../utils/exceptions"
 import { FirebaseService } from "../services/FirebaseService"
 import { isUserRoleAdmin } from "../utils/commonUtils"
 import { EmailConfig } from "../config/EmailConfig"
@@ -9,34 +9,43 @@ import { UserModel } from "../models/user"
 import { approvalEmailContent, rejectionEmailContent } from "../utils/mailTemplates"
 
 export class ProductController {
-
-
-  static async getAllProducts(req: CustomRequest, res: Response, next: NextFunction){
+  static async getAllProducts(req: CustomRequest, res: Response, next: NextFunction) {
     try {
-     
       const products = await ProductSchema.find({
         adminapproval: {
-          $in: ['APPROVED', 'BIDDING']
-        }
-      });      
-     
-      res.status(200).json(products);
+          $in: ["APPROVED", "BIDDING"],
+        },
+      })
+
+      res.status(200).json(products)
     } catch (error) {
-      
-      throw new InternalServerError("An unexpected error occurred.");
+      throw new InternalServerError("An unexpected error occurred.")
     }
   }
 
-  static async getProductByUserId(req: CustomRequest, res: Response, next: NextFunction){
+  static async getProductDetailsById(req: CustomRequest, res: Response, next: NextFunction) {
     try {
-      const userId = req.userId;
+      const { productid } = req.params
+      const product = await ProductSchema.findById(productid)
+      if(!product){
+        throw new BadRequest('Product Details not found')
+      }
+      res.status(200).json(product.toJSON())
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  static async getProductByUserId(req: CustomRequest, res: Response, next: NextFunction) {
+    try {
+      const userId = req.userId
 
       // Find all products belonging to the specified user
-      const products = await ProductSchema.find({ userid: userId });
+      const products = await ProductSchema.find({ userid: userId })
 
-      res.status(200).json(products || []);
+      res.status(200).json(products || [])
     } catch (error) {
-      throw new InternalServerError("An unexpected error occurred.");
+      throw new InternalServerError("An unexpected error occurred.")
     }
   }
   static async addProduct(req: CustomRequest, res: Response, next: NextFunction) {

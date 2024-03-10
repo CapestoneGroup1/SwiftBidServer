@@ -5,6 +5,7 @@ import { validateToken } from "../middlewares/authMiddlewares"
 const router = express.Router()
 
 router.get("/", validateToken, ProductController.getAllProducts)
+router.get("/details/:productid", validateToken, ProductController.getProductDetailsById)
 router.post("/add", validateToken, upload.single("file"), ProductController.addProduct)
 router.post("/update", validateToken, upload.single("file"), ProductController.updateProduct)
 router.get("/userId", validateToken, ProductController.getProductByUserId)
