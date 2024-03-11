@@ -5,7 +5,7 @@ on:
   # Automatically trigger it when detected changes in repo
   push:
     branches: 
-      [ main ]
+      [ dummy ]
     paths:
     - '**'
     - '.github/workflows/swiftbidbackend-AutoDeployTrigger-0da169ff-0ca5-4f3b-8f8f-20edb27f08f8.yml'
