@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "test" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -22,4 +22,4 @@ jobs:
       run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
     - name: Build and tag Docker image
       run: |
-        docker buildx build --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/swiftbidserver:${{ github.sha }} --tag ${{ secrets.DOCKERHUB_USERNAME }}/swiftbidserver:latest --push .
+        docker buildx build --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/swiftbidbackend:${{ github.sha }} --tag ${{ secrets.DOCKERHUB_USERNAME }}/swiftbidbackend:latest --push .
