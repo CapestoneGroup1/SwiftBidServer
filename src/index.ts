@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
 
-app.get("/healthCheck", (req: Request, res: Response) => {
+app.get("/health", (req: Request, res: Response) => {
   res.send("Server is Up and Running")
 })
 
@@ -60,7 +60,7 @@ FirebaseService.initialize()
 EmailConfig.initialize()
 MongoClient.initialize()
   .then(() => {
-    app.listen(3000, () => console.log("App is listening on port 3000 " + port))
+    app.listen(3000, () => console.log("App is listening on port " + port))
   })
   .catch((error) => {
     console.error("Faile to start Server", error)

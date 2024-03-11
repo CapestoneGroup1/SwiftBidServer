@@ -8,6 +8,7 @@ export class EmailConfig {
 
   static initialize() {
     if (!EmailConfig.twilioEmailClient) {
+      console.log("Initialising Send GRID EMail service with : " +process.env.SENDGRID_API_KEY)
       sgMail.setApiKey(process.env.SENDGRID_API_KEY || "")
       EmailConfig.twilioEmailClient = sgMail
     }
