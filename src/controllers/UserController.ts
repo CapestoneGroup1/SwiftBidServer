@@ -19,9 +19,9 @@ export class UserController {
       if (!userDetails) {
         throw new BadRequest("User doesnt Exist")
       }
-      const { username, email, mobile, address, province, city, postalcode, role } = userDetails
+      const { username, email, mobile, address, province, city, postalcode, role, country } = userDetails
 
-      return res.json({ username, email, mobile, address, province, city, postalcode, id: userDetails._id, role })
+      return res.json({ username, email, mobile, address, province, city, postalcode, id: userDetails._id, role, country })
     } catch (error) {
       next(error)
     }
@@ -56,7 +56,7 @@ export class UserController {
       throw new BadRequest("User doesnt Exist")
 
       const body = req.body as User;
-      const { email, mobile, address, province, city, postalcode } = body;
+      const { email, mobile, address, province, city, postalcode, country } = body;
 
       //DO EMial unique check...
       if(email) {
@@ -69,7 +69,7 @@ export class UserController {
         }
       }
 
-      const savedUser = await saveUserProfile({ email, mobile, address, province, city, postalcode }, req.userId);
+      const savedUser = await saveUserProfile({ email, mobile, address, province, city, postalcode, country }, req.userId);
       if(!savedUser) {
         throw new Error("Internal Error");
       }
