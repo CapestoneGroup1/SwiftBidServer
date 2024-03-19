@@ -2,6 +2,8 @@ import { NextFunction, Response } from "express"
 import { CustomRequest, User } from "../types"
 import { getUserFromEmail, getUserProfile, saveUserProfile } from "../services/UserServices"
 import { BadRequest } from "../utils/exceptions"
+import { WinnerModel } from "../models/winners"
+import { UserModel } from "../models/user"
 
 export class UserController {
   /**
@@ -19,9 +21,21 @@ export class UserController {
       if (!userDetails) {
         throw new BadRequest("User doesnt Exist")
       }
-      const { username, email, mobile, address, province, city, postalcode, role, country } = userDetails
+      const { username, email, mobile, address, province, city, postalcode, role, country } =
+        userDetails
 
-      return res.json({ username, email, mobile, address, province, city, postalcode, id: userDetails._id, role, country })
+      return res.json({
+        username,
+        email,
+        mobile,
+        address,
+        province,
+        city,
+        postalcode,
+        id: userDetails._id,
+        role,
+        country,
+      })
     } catch (error) {
       next(error)
     }
@@ -51,42 +65,65 @@ export class UserController {
 
   static async saveUserProfile(req: CustomRequest, res: Response, next: NextFunction) {
     try {
+      if (!req.userId) throw new BadRequest("User doesnt Exist")
 
-      if(!req.userId)
-      throw new BadRequest("User doesnt Exist")
-
-      const body = req.body as User;
-      const { email, mobile, address, province, city, postalcode, country } = body;
+      const body = req.body as User
+      const { email, mobile, address, province, city, postalcode, country } = body
 
       //DO EMial unique check...
-      if(email) {
-        const userFromDB = await getUserProfile(req.userId);
-        if(userFromDB?.email !== email) {
-          const existingUser = await getUserFromEmail(email);
-          if(existingUser) {
+      if (email) {
+        const userFromDB = await getUserProfile(req.userId)
+        if (userFromDB?.email !== email) {
+          const existingUser = await getUserFromEmail(email)
+          if (existingUser) {
             throw new BadRequest("Email already Exists")
           }
         }
       }
 
-      const savedUser = await saveUserProfile({ email, mobile, address, province, city, postalcode, country }, req.userId);
-      if(!savedUser) {
-        throw new Error("Internal Error");
+      const savedUser = await saveUserProfile(
+        { email, mobile, address, province, city, postalcode, country },
+        req.userId,
+      )
+      if (!savedUser) {
+        throw new Error("Internal Error")
       }
 
       //Update.
-      return res.json({ 
+      return res.json({
         email: savedUser.email,
         mobile: savedUser.mobile,
         address: savedUser.address,
         province: savedUser.province,
         city: savedUser.city,
         postalcode: savedUser.postalcode,
-        username: savedUser.postalcode
+        username: savedUser.postalcode,
       })
-
     } catch (error) {
       console.log(error)
+      next(error)
+    }
+  }
+
+  static async getUserWinnings(req: CustomRequest, res: Response, next: NextFunction) {
+    try {
+      const { userId = "" } = req
+      const winnings = await WinnerModel.find({
+        userid: userId,
+      }).populate("productid")
+
+      return res.json(winnings)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  static async getUserWishlist(req: CustomRequest, res: Response, next: NextFunction) {
+    try {
+      const { userId = "" } = req
+      const data = await UserModel.findById(userId).populate("wishlist")
+      return res.json(data?.wishlist || [])
+    } catch (error) {
       next(error)
     }
   }

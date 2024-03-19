@@ -7,16 +7,32 @@ import { isFileAcceptable, isUserRoleAdmin } from "../utils/commonUtils"
 import { EmailConfig } from "../config/EmailConfig"
 import { UserModel } from "../models/user"
 import { approvalEmailContent, rejectionEmailContent } from "../utils/mailTemplates"
+import { getProductBids } from "../services/ProductService"
+import { WinnerModel } from "../models/winners"
 
 export class ProductController {
+  
   static async getAllProducts(req: CustomRequest, res: Response, next: NextFunction) {
     try {
-      const products = await ProductSchema.find({
+      const filter = {
         adminapproval: {
           $in: ["APPROVED", "BIDDING"],
         },
-      })
+        bidenddate: { $gt: new Date().getTime().toString() },
+      } as any
 
+      const { category, limit } = req.query
+      if (category) {
+        filter.category = category
+      }
+
+      const query = ProductSchema.find(filter)
+
+      if (limit) {
+        query.limit(parseInt(limit as string, 10))
+      }
+
+      const products = await query.exec()
       res.status(200).json(products)
     } catch (error) {
       throw new InternalServerError("An unexpected error occurred.")
@@ -218,6 +234,84 @@ export class ProductController {
         }
       }
       res.status(200).json({ ...updatedProduct?.toJSON() })
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  /**
+   * Returns products whose bid end date is reached and winners are yet to be declared...
+   * @param req
+   * @param res
+   * @param next
+   */
+  static async getBidEndProducts(req: CustomRequest, res: Response, next: NextFunction) {
+    try {
+      const { timestamp } = req.params
+      if (!timestamp) {
+        throw new BadRequest("Timestamp not provided")
+      }
+
+      const results = []
+
+      const products = await ProductSchema.find({
+        adminapproval: {
+          $in: ["APPROVED"],
+        },
+        bidenddate: timestamp,
+      }).populate("userid")
+      for (let i = 0; i < products.length; i++) {
+        const bids = await getProductBids(products[i]["_id"].toString())
+        results.push({
+          product: products[i],
+          bids,
+        })
+      }
+
+      res.status(200).json(results)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  /**
+   * For the productids sent in body, it changes the status to stop bidding anf declare winners
+   * @param req
+   * @param res
+   * @param next
+   */
+  static async stopBiddingAndDEclareWinners(req: CustomRequest, res: Response, next: NextFunction) {
+    try {
+      const { timestamp } = req.params
+      if (!timestamp) {
+        throw new BadRequest("Timestamp not provided")
+      }
+
+      const products = await ProductSchema.find({
+        adminapproval: {
+          $in: ["APPROVED"],
+        },
+        bidenddate: timestamp,
+      })
+
+      for (let i = 0; i < products.length; i++) {
+        const { _id } = products[i]
+        const bids = await getProductBids(products[i]["_id"].toString())
+        await ProductSchema.findByIdAndUpdate(_id, {
+          adminapproval: bids?.length > 0 ? "SOLD" : "EXPIRED",
+        })
+        if (bids.length > 0) {
+          const winningBid = bids[0]
+          await WinnerModel.create({
+            userid: winningBid.userid,
+            productid: _id,
+            bidprice: winningBid.bidprice,
+            date: winningBid.date,
+          })
+        }
+      }
+
+      res.status(200).json({})
     } catch (error) {
       next(error)
     }

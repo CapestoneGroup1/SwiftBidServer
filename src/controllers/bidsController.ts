@@ -4,6 +4,7 @@ import { BadRequest } from "../utils/exceptions"
 import { BidModel } from "../models/bid"
 import { ProductSchema } from "../models/product"
 import { getProductBids } from "../services/ProductService"
+import { UserModel } from "../models/user"
 
 export class BidController {
   /**
@@ -37,6 +38,14 @@ export class BidController {
         throw new BadRequest("Bid Price Should be greater than Base Price")
       }
 
+      const bidenddate = productDetails.bidenddate
+      const now = new Date().getTime()
+      console.log(bidenddate)
+      console.log(now)
+      if (now > +bidenddate) {
+        throw new BadRequest("Bids are not accepted after Availability Date")
+      }
+
       const highestBid = await BidModel.find({ productid }).sort({ bidprice: -1 })
       const highestBidPrice = highestBid.length > 0 ? highestBid[0].bidprice : 0
 
@@ -50,6 +59,13 @@ export class BidController {
         date: new Date(),
         userid: req.user?.id,
       })
+
+      // push the product id to the existing wishlist array
+      await UserModel.findByIdAndUpdate(
+        req.user!.id,
+        { $addToSet: { wishlist: productid } },
+        { new: true },
+      )
 
       return res.json(bidDetails.toJSON())
     } catch (error) {
@@ -71,7 +87,6 @@ export class BidController {
     }
   }
 
-  
   static async getUserBidsProductWise(req: CustomRequest, res: Response, next: NextFunction) {
     try {
       const { productid } = req.params

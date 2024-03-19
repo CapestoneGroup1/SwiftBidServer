@@ -27,5 +27,7 @@ router.post(
   upload.single("file"),
   ProductController.updateProduct,
 )
+router.get("/product/bidend/:timestamp", validateToken, isUserAdmin, ProductController.getBidEndProducts)
+router.get("/product/declarewinners/:timestamp", validateToken, isUserAdmin, ProductController.stopBiddingAndDEclareWinners)
 
 export const adminRoutes = router

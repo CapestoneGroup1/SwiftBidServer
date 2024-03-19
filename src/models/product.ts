@@ -29,10 +29,11 @@ var products = new Schema({
     ref: "swiftbiduser",
   },
   bidenddate: {
-    type: Date,
+    type: Schema.Types.String, // number of milliseconds
+    required: true,
   },
   adminapproval: {
-    type: String, // PENDING / APPROVED / REJECTED / BIDDING / SOLD
+    type: String, // PENDING / APPROVED / REJECTED  / SOLD / EXPIRED
   },
   bids: [
     {

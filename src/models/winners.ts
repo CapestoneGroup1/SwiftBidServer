@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 const Schema = mongoose.Schema
 
-export const bidSchema = new Schema({
+export const winnerSchema = new Schema({
   userid: {
     type: Schema.Types.ObjectId,
     ref: "swiftbiduser",
@@ -20,6 +20,9 @@ export const bidSchema = new Schema({
     type: Date,
     required: true,
   },
+  paymentcompleted: {
+    type: Boolean
+  }
 })
 
-export const BidModel = mongoose.model("Bid", bidSchema)
+export const WinnerModel = mongoose.model("winners", winnerSchema)

@@ -13,5 +13,7 @@ router.post(
   validateSchema(SaveProfileSchema),
   UserController.saveUserProfile,
 )
+router.get("/winnings", validateToken, UserController.getUserWinnings)
+router.get("/wishlist", validateToken, UserController.getUserWishlist)
 
 export const userRoutes = router

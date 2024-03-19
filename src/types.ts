@@ -43,7 +43,7 @@ export interface Product {
   category: string
   userid: string
   status?: boolean
-  bidenddate?: Date
+  bidenddate: Date
   adminapproval?: boolean
 }
 export interface AddCategoryRequest {

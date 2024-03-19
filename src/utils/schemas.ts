@@ -1,7 +1,7 @@
 import Joi from "joi"
 
 export const SignUpSchema = Joi.object({
-  username: Joi.string().alphanum().min(4).max(8).required(),
+  username: Joi.string().alphanum().min(4).max(12).required(),
   email: Joi.string()
     .email({ tlds: { allow: false } })
     .required(),
@@ -30,7 +30,7 @@ export const ResetPasswordSchema = Joi.object({
 })
 
 export const SaveProfileSchema = Joi.object({
-  username: Joi.string().alphanum().min(4).max(8).required(),
+  username: Joi.string().alphanum().min(4).max(12).required(),
   email: Joi.string()
     .email({ tlds: { allow: false } })
     .required(),
@@ -52,7 +52,7 @@ export const AddProductSchema = Joi.object({
     .pattern(/^[0-9]+$/)
     .required(),
   category: Joi.string().required(),
-  bidenddate: Joi.date().optional(),
+  bidenddate: Joi.string().required(), //number of milliseconds
   file: Joi.any().optional(),
 })
 

@@ -42,6 +42,12 @@ var userSchema = new Schema({
   otp: {
     type: String,
   },
+  wishlist: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Products",
+    },
+  ],
   bids: [
     {
       type: Schema.Types.ObjectId,
