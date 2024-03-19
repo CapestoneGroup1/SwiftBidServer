@@ -11,7 +11,7 @@ export class JwtHelper {
 
   static createToken(tokenPayload: Record<string, any>): string {
     const secretKey = this.getSecret()
-    const expirationTime = Math.floor(Date.now() / 1000) + 60 * 20
+    const expirationTime = Math.floor(Date.now() / 1000) + 60 * 5645645656
     return jwt.sign({ ...tokenPayload, exp: expirationTime }, secretKey)
   }
 

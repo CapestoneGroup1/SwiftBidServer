@@ -11,6 +11,8 @@ import { productRoutes } from "./routehandlers/productRoutes"
 import { categoryRoutes } from "./routehandlers/categoryRoutes"
 import "./config/firebase"
 import { FirebaseService } from "./services/FirebaseService"
+import { bidRoutes } from "./routehandlers/bidRoutes"
+import { adminRoutes } from "./routehandlers/adminRoutes"
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -22,7 +24,7 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
 
-app.get("/healthCheck", (req: Request, res: Response) => {
+app.get("/health", (req: Request, res: Response) => {
   res.send("Server is Up and Running")
 })
 
@@ -30,6 +32,9 @@ app.use("/auth", userAuthRoutes)
 app.use("/user", userRoutes)
 app.use("/product", productRoutes)
 app.use("/category", categoryRoutes)
+app.use("/bids", bidRoutes)
+app.use("/admin", adminRoutes)
+
 
 /**
  * Global Error Handler for complete app.
@@ -55,7 +60,7 @@ FirebaseService.initialize()
 EmailConfig.initialize()
 MongoClient.initialize()
   .then(() => {
-    app.listen(3000, () => console.log("App is listening on port 3000 " + port))
+    app.listen(port, () => console.log("App is listening on port " + port))
   })
   .catch((error) => {
     console.error("Faile to start Server", error)

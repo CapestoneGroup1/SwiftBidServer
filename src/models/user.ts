@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
-
 var Schema = mongoose.Schema
+
 var userSchema = new Schema({
   username: {
     type: String,
@@ -42,6 +42,12 @@ var userSchema = new Schema({
   otp: {
     type: String,
   },
+  bids: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Bid",
+    },
+  ],
 })
 
 export const UserModel = mongoose.model("swiftbiduser", userSchema)

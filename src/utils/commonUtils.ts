@@ -11,3 +11,9 @@ export const generateOtp = () => {
 export const isUserRoleAdmin = (role: string) => {
   return role && role.toLowerCase() === "admin"
 }
+
+export const isFileAcceptable = (fileType: string): boolean => {
+  const imageExtensionsRegex = /^(jpg|jpeg|png)$/i
+
+  return imageExtensionsRegex.test(fileType)
+}

@@ -1,14 +1,13 @@
 import express from "express"
 import { AuthController } from "../controllers/AuthController"
-import { isUserEmailExists } from "../middlewares/authMiddlewares"
+import { isUserEmailExists, validateSchema } from "../middlewares/authMiddlewares"
+import { ForgotPasswordSchema, LoginSchema, ResetPasswordSchema, SignUpSchema } from "../utils/schemas"
 
 const router = express.Router()
 
-router.post("/login", AuthController.login)
-
-router.post("/signup", AuthController.signup)
-
-router.post("/forgotpassword", isUserEmailExists, AuthController.forgotPassword)
-router.post("/resetpassword", AuthController.resetPassword)
+router.post("/login", validateSchema(LoginSchema), AuthController.login)
+router.post("/signup", validateSchema(SignUpSchema), AuthController.signup)
+router.post("/forgotpassword", validateSchema(ForgotPasswordSchema) ,isUserEmailExists, AuthController.forgotPassword)
+router.post("/resetpassword", validateSchema(ResetPasswordSchema) ,AuthController.resetPassword)
 
 export const userAuthRoutes = router

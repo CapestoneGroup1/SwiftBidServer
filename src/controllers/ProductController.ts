@@ -1,38 +1,51 @@
 import { NextFunction, Request, Response } from "express"
 import { ProductSchema } from "../models/product"
 import { ApproveRejectPRoduct, CustomRequest, Product } from "../types"
-import { BadRequest,InternalServerError,NotFound } from "../utils/exceptions"
+import { BadRequest, InternalServerError, NotFound } from "../utils/exceptions"
 import { FirebaseService } from "../services/FirebaseService"
-import { isUserRoleAdmin } from "../utils/commonUtils"
+import { isFileAcceptable, isUserRoleAdmin } from "../utils/commonUtils"
 import { EmailConfig } from "../config/EmailConfig"
 import { UserModel } from "../models/user"
 import { approvalEmailContent, rejectionEmailContent } from "../utils/mailTemplates"
 
 export class ProductController {
-
-
-  static async getAllProducts(req: CustomRequest, res: Response, next: NextFunction){
+  static async getAllProducts(req: CustomRequest, res: Response, next: NextFunction) {
     try {
-     
-      const products = await ProductSchema.find();
-     
-      res.status(200).json(products);
+      const products = await ProductSchema.find({
+        adminapproval: {
+          $in: ["APPROVED", "BIDDING"],
+        },
+      })
+
+      res.status(200).json(products)
     } catch (error) {
-      
-      throw new InternalServerError("An unexpected error occurred.");
+      throw new InternalServerError("An unexpected error occurred.")
     }
   }
 
-  static async getProductByUserId(req: CustomRequest, res: Response, next: NextFunction){
+  static async getProductDetailsById(req: CustomRequest, res: Response, next: NextFunction) {
     try {
-      const userId = req.userId;
+      const { productid } = req.params
+      const product = await ProductSchema.findById(productid)
+      if (!product) {
+        throw new BadRequest("Product Details not found")
+      }
+      res.status(200).json(product.toJSON())
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  static async getProductByUserId(req: CustomRequest, res: Response, next: NextFunction) {
+    try {
+      const userId = req.userId
 
       // Find all products belonging to the specified user
-      const products = await ProductSchema.find({ userid: userId });
+      const products = await ProductSchema.find({ userid: userId })
 
-      res.status(200).json(products || []);
+      res.status(200).json(products || [])
     } catch (error) {
-      throw new InternalServerError("An unexpected error occurred.");
+      throw new InternalServerError("An unexpected error occurred.")
     }
   }
   static async addProduct(req: CustomRequest, res: Response, next: NextFunction) {
@@ -43,6 +56,12 @@ export class ProductController {
       const file = req?.file
       if (!file) {
         throw new BadRequest("Please upload an image")
+      }
+
+      console.log(file.mimetype?.split("/")[1])
+      const isValidExtension = isFileAcceptable(file.mimetype?.split("/")[1])
+      if (!isValidExtension) {
+        throw new BadRequest("We accept only jpg, jpeg, png file type")
       }
 
       const firebaseService = FirebaseService.initialize()
@@ -97,6 +116,10 @@ export class ProductController {
           `${req.userId}-${new Date().getTime()}`,
           file.mimetype,
         )
+        const isValidExtension = isFileAcceptable(file.mimetype?.split("/")[1])
+        if (!isValidExtension) {
+          throw new BadRequest("We accept only jpg, jpeg, png file type")
+        }
       }
 
       // Find and update the product by ID
