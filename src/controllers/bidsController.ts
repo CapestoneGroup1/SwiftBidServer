@@ -1,5 +1,5 @@
 import { NextFunction, Response } from "express"
-import { CustomRequest, PlaceNewBid } from "../types"
+import { CustomRequest, PlaceNewBid, User } from "../types"
 import { BadRequest } from "../utils/exceptions"
 import { BidModel } from "../models/bid"
 import { ProductSchema } from "../models/product"
@@ -32,6 +32,11 @@ export class BidController {
 
       if (productDetails.userid.toString() === req.user?.id) {
         throw new BadRequest("You cannot Bid on your Own Products")
+      }
+
+      const {address, mobile, city, country, province} = req.user as User
+      if(!address || !mobile || !city || !country || !province) {
+        throw new BadRequest("Please Fill your Profile Details to start Bidding")
       }
 
       if (bidprice <= productDetails.price) {
