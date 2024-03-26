@@ -7,11 +7,12 @@ import { isFileAcceptable, isUserRoleAdmin } from "../utils/commonUtils"
 import { EmailConfig } from "../config/EmailConfig"
 import { UserModel } from "../models/user"
 import { approvalEmailContent, rejectionEmailContent } from "../utils/mailTemplates"
-import { getProductBids } from "../services/ProductService"
+import { chargeUserForPurchase, getProductBids, getProductBidsOnly } from "../services/ProductService"
 import { WinnerModel } from "../models/winners"
+import { getUserProfile } from "../services/UserServices"
+import { chargeUserCard } from "../services/StripeService"
 
 export class ProductController {
-  
   static async getAllProducts(req: CustomRequest, res: Response, next: NextFunction) {
     try {
       const filter = {
@@ -295,22 +296,20 @@ export class ProductController {
       })
 
       for (let i = 0; i < products.length; i++) {
-        const { _id } = products[i]
-        const bids = await getProductBids(products[i]["_id"].toString())
-        await ProductSchema.findByIdAndUpdate(_id, {
-          adminapproval: bids?.length > 0 ? "SOLD" : "EXPIRED",
-        })
-        if (bids.length > 0) {
-          const winningBid = bids[0]
-          await WinnerModel.create({
-            userid: winningBid.userid,
-            productid: _id,
-            bidprice: winningBid.bidprice,
-            date: winningBid.date,
+        try {
+          const { _id } = products[i]
+          const bids = await getProductBidsOnly(_id.toString())
+          await ProductSchema.findByIdAndUpdate(_id, {
+            adminapproval: bids?.length > 0 ? "SOLD" : "EXPIRED",
           })
+          if (bids.length > 0) {
+            const { userid, bidprice, date, productid } = bids[0] // winning BID Details
+            await chargeUserForPurchase(userid.toString(), productid.toString(), bidprice, date)
+          }
+        } catch (error) {
+          console.log(error)
         }
       }
-
       res.status(200).json({})
     } catch (error) {
       next(error)

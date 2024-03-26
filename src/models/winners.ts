@@ -21,8 +21,14 @@ export const winnerSchema = new Schema({
     required: true,
   },
   paymentcompleted: {
-    type: Boolean
-  }
+    type: Boolean,
+  },
+  cardId: {
+    type: String,
+  },
+  transactionId: {
+    type: String,
+  },
 })
 
 export const WinnerModel = mongoose.model("winners", winnerSchema)

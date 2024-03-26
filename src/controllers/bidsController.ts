@@ -34,13 +34,19 @@ export class BidController {
         throw new BadRequest("You cannot Bid on your Own Products")
       }
 
-      const {address, mobile, city, country, province} = req.user as User
-      if(!address || !mobile || !city || !country || !province) {
+      const { address, mobile, city, country, province, primaryCard } = req.user as User
+      if (!address || !mobile || !city || !country || !province) {
         throw new BadRequest("Please Fill your Profile Details to start Bidding")
       }
 
+      if (!primaryCard) {
+        throw new BadRequest("These is no Active Payment card set in your Account")
+      }
+
       if (bidprice <= productDetails.price) {
-        throw new BadRequest("Bid Price Should be greater than Base Price")
+        throw new BadRequest(
+          "Unable to place bid. Please set an active payment card as your primary card in your account settings.",
+        )
       }
 
       const bidenddate = productDetails.bidenddate
@@ -66,11 +72,15 @@ export class BidController {
       })
 
       // push the product id to the existing wishlist array
-      await UserModel.findByIdAndUpdate(
-        req.user!.id,
-        { $addToSet: { wishlist: productid } },
-        { new: true },
-      )
+      const userDetails = await UserModel.findById(req.user!.id)
+      if (
+        userDetails &&
+        (!userDetails.wishlist || !userDetails.wishlist.includes(productDetails._id))
+      ) {
+        userDetails.wishlist = userDetails.wishlist || []
+        userDetails.wishlist.push(productDetails._id)
+        await userDetails.save()
+      }
 
       return res.json(bidDetails.toJSON())
     } catch (error) {

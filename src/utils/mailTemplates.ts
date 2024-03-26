@@ -105,3 +105,109 @@ export const rejectionEmailContent = `
 </body>
 </html>
 `
+
+export const purchaseSuccess = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Success</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+  }
+  .container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  h1 {
+    color: #333;
+  }
+  p {
+    color: #666;
+    line-height: 1.6;
+  }
+  .footer {
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+    text-align: center;
+    color: #999;
+    font-size: 0.8em;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Payment Success</h1>
+    <p>Hello Swiftbid customer,</p>
+    <p>We are happy to inform you that you have won the {0} for {1}.</p>
+    <p>Auto Debit Payment was Successfull.</p>
+    <p>Thank you for choosing our platform.</p>
+    <div class="footer">
+      <p>This is an automated message. Please do not reply.</p>
+    </div>
+  </div>
+</body>
+</html>`
+
+export const failedPurchase = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment failure</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+  }
+  .container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  h1 {
+    color: #333;
+  }
+  p {
+    color: #666;
+    line-height: 1.6;
+  }
+  .footer {
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+    text-align: center;
+    color: #999;
+    font-size: 0.8em;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Payment Failure</h1>
+    <p>Hello Swiftbid customer,</p>
+    <p>We are sorry to inform you that your Auto Debit has failed for the product {0} ,  {1}.</p>
+    <p>Please Retry the payment from Youe account</p>
+    <p>Thank you for choosing our platform.</p>
+    <div class="footer">
+      <p>This is an automated message. Please do not reply.</p>
+    </div>
+  </div>
+</body>
+</html>`
