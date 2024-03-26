@@ -13,6 +13,8 @@ import "./config/firebase"
 import { FirebaseService } from "./services/FirebaseService"
 import { bidRoutes } from "./routehandlers/bidRoutes"
 import { adminRoutes } from "./routehandlers/adminRoutes"
+import { addNewCardForCustomer, chargeUserCard, createCustomer, deleteCustomerCard, getCustomerSavedCards } from "./services/StripeService"
+import { AddNewCreditCard } from "./types"
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -20,7 +22,7 @@ const port = process.env.PORT || 3000
 dotenv.config()
 
 app.use(express.static("public"))
-app.use(express.json());
+app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
 
@@ -35,6 +37,39 @@ app.use("/category", categoryRoutes)
 app.use("/bids", bidRoutes)
 app.use("/admin", adminRoutes)
 
+app.get("/test/stripe/customer", async (req, res, next) => {
+  const customer = await createCustomer("teststripe1@gmail.com")
+  res.json(customer)
+})
+
+
+app.get("/test/stripe/customer/cards/", async (req, res, next) => {
+  const savedCards = await getCustomerSavedCards("cus_PnUqsxD2Hk6eIX")
+  res.json(savedCards)
+})
+
+
+app.get("/test/stripe/customer/charge/", async (req, res, next) => {
+  const charge = await chargeUserCard("cus_PnUqsxD2Hk6eIX", "card_1OxuxaLjhQBMegblj3MkYEmO", 100, "teststripe1@gmail.com")
+  res.json(charge)
+})
+
+app.delete("/test/stripe/customer/cards/", async (req, res, next) => {
+  const deleted = await deleteCustomerCard("cus_PnUqsxD2Hk6eIX", "card_1OxuYlLjhQBMegblPUg2oXgz")
+  res.json(deleted)
+})
+
+app.post("/test/stripe/savecard/:id", async (req, res, next) => {
+  const { body } = req
+  const { id } = req.params
+  const { name, address_country, address_zip, cvc, exp_month, exp_year, number } =
+    body as AddNewCreditCard
+  const card = await addNewCardForCustomer(
+    { name, address_country, address_zip, cvc, exp_month, exp_year, number },
+    id,
+  )
+  res.json(card)
+})
 
 /**
  * Global Error Handler for complete app.
@@ -63,5 +98,5 @@ MongoClient.initialize()
     app.listen(port, () => console.log("App is listening on port " + port))
   })
   .catch((error) => {
-    console.error("Faile to start Server", error)
-  })
+    console.error("Faile to start Server", error)
+  })

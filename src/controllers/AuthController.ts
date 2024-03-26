@@ -64,11 +64,12 @@ export class AuthController {
       const hashedPassword = await bcrypt.hash(userData.password, 10)
       userData.password = hashedPassword
 
-      const newUser = await UserModel.create(userData)
+      const newUser = await UserModel.create({...userData, savedCards: [], stripeCustomerId: ""})
       const token = JwtHelper.createToken({ id: newUser._id })
 
       return res.status(201).json({ token })
     } catch (error) {
+      console.log(error)
       return res.status(500).json({ error: "Internal server error" })
     }
   }
@@ -118,6 +119,6 @@ export class AuthController {
       })
     } catch (error) {
       next(error)
-    }
-  }
+    }
+  }
 }

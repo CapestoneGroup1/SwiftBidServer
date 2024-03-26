@@ -16,4 +16,9 @@ router.post(
 router.get("/winnings", validateToken, UserController.getUserWinnings)
 router.get("/wishlist", validateToken, UserController.getUserWishlist)
 
-export const userRoutes = router
+router.post("/addnewcard", validateToken, UserController.addNewCardForUser)
+router.get("/savedcards", validateToken, UserController.userCards)
+router.post("/setprimarycard/:cardId", validateToken, UserController.changePrimaryCard)
+router.post("/deletecard/:cardId", validateToken, UserController.deleteCard)
+
+export const userRoutes = router

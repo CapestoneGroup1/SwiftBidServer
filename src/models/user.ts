@@ -54,6 +54,20 @@ var userSchema = new Schema({
       ref: "Bid",
     },
   ],
+  stripeCustomerId: {
+    type: String,
+    required:false
+  },
+  savedCards: [
+    {
+      type: String, // Array of CardIds
+      required:false
+    },
+  ],
+  primaryCard: {
+    type: String,
+    required:false
+  },
 })
 
-export const UserModel = mongoose.model("swiftbiduser", userSchema)
+export const UserModel = mongoose.model("swiftbiduser", userSchema)
