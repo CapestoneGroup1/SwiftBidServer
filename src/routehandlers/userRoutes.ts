@@ -20,5 +20,6 @@ router.post("/addnewcard", validateToken, UserController.addNewCardForUser)
 router.get("/savedcards", validateToken, UserController.userCards)
 router.post("/setprimarycard/:cardId", validateToken, UserController.changePrimaryCard)
 router.post("/deletecard/:cardId", validateToken, UserController.deleteCard)
+router.get("/invoice/:transactionId", validateToken, UserController.invoice)
 
 export const userRoutes = router

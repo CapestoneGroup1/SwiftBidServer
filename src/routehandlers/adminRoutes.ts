@@ -29,5 +29,6 @@ router.post(
 )
 router.get("/product/bidend/:timestamp", validateToken, isUserAdmin, ProductController.getBidEndProducts)
 router.get("/product/declarewinners/:timestamp", validateToken, isUserAdmin, ProductController.stopBiddingAndDEclareWinners)
+router.get("/winners", validateToken, isUserAdmin, ProductController.getAllWinners)
 
 export const adminRoutes = router

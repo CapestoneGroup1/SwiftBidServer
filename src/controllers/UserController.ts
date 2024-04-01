@@ -11,7 +11,8 @@ import {
 } from "../services/StripeService"
 import { getProductBids, getProductBidsOnly } from "../services/ProductService"
 import { BidModel } from "../models/bid"
-
+import { ProductSchema } from "../models/product"
+import easyinvoice from "easyinvoice"
 export class UserController {
   /**
    * This is to get profile for loggedIN users
@@ -256,6 +257,87 @@ export class UserController {
     }
   }
 
+  static async invoice(req: CustomRequest, res: Response, next: NextFunction) {
+    try {
+      const { userId } = req
+      const { transactionId } = req.params
+
+      if (!transactionId) {
+        throw new BadRequest("Transaction Not Found")
+      }
+
+      res.setHeader("Content-Type", "application/pdf")
+      res.setHeader("Content-Disposition", "attachment; filename=" + transactionId + ".pdf")
+
+      const details = await WinnerModel.findOne({
+        transactionId,
+      })
+
+      if (!details) {
+        throw new BadRequest("Transaction Not Found")
+      }
+
+      const { userid, productid, bidprice, date } = details
+
+      if (userId !== userid?.toString()) {
+        throw new BadRequest("FOrbidden to download other users invoice")
+      }
+
+      const userDetails = await UserModel.findById(userId)
+      if (!userDetails) {
+        throw new BadRequest("User Not Found")
+      }
+
+      const productDetails = await ProductSchema.findById(productid)
+      if (!productDetails) {
+        throw new BadRequest("productDetails Not Found")
+      }
+
+      const products = [
+        {
+          quantity: "1",
+          "tax-rate": 0,
+          price: bidprice,
+          description: productDetails.name,
+        },
+      ]
+
+      var data = {
+        sender: {
+          company: "SwiftBid",
+          address: "Kitchener Downtown",
+          zip: "ABC 2R4",
+          city: "Kitchener",
+          country: "Canada",
+        },
+        client: {
+          company: userDetails.username || "",
+          address: userDetails.address || "",
+          zip: userDetails.postalcode || "",
+          city: userDetails.city || "",
+          country: "Canada",
+        },
+        information: {
+          number: transactionId || "",
+          date: new Date(date).toDateString(),
+        },
+        products,
+        "bottom-notice": "SwiftBid",
+        settings: {
+          currency: "CAD",
+        },
+      }
+
+      const response = await easyinvoice.createInvoice(data)
+      const pdfBuffer = Buffer.from(response.pdf, "base64")
+      res.setHeader("Content-Length", pdfBuffer.length)
+      res.send(pdfBuffer)
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
+
   static async deleteCard(req: CustomRequest, res: Response, next: NextFunction) {
     try {
       const { userId } = req
@@ -316,6 +398,6 @@ export class UserController {
     } catch (error) {
       console.log(error)
       next(error)
-    }
-  }
+    }
+  }
 }

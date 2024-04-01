@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import { UserModel } from "../models/user"
 import { JwtHelper } from "../utils/JwtHelper"
-import { CustomRequest } from "../types"
+import { CustomRequest, GoogleLinkRequest } from "../types"
 import { generateOtp } from "../utils/commonUtils"
 import { EmailConfig } from "../config/EmailConfig"
 import bcrypt from "bcrypt"
@@ -29,14 +29,13 @@ export class AuthController {
     try {
       const { email, password } = req.body
 
-      console.log(email,password);
       const user = await UserModel.findOne({ email })
 
       if (!user) {
         return res.status(400).json({ error: "User not found" })
       }
 
-      const match = await bcrypt.compare(password, user.password)
+      const match = await bcrypt.compare(password, user.password || "")
       if (!match) {
         return res.status(400).json({ error: "Incorrect password" })
       }
@@ -45,7 +44,7 @@ export class AuthController {
         token: JwtHelper.createToken({ id: user._id }),
       })
     } catch (error) {
-      console.log(error);
+      console.log(error)
       return res.status(500).json({ error: "Internal server error" })
     }
   }
@@ -64,10 +63,52 @@ export class AuthController {
       const hashedPassword = await bcrypt.hash(userData.password, 10)
       userData.password = hashedPassword
 
-      const newUser = await UserModel.create({...userData, savedCards: [], stripeCustomerId: ""})
+      const newUser = await UserModel.create({ ...userData, savedCards: [], stripeCustomerId: "" })
       const token = JwtHelper.createToken({ id: newUser._id })
 
       return res.status(201).json({ token })
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({ error: "Internal server error" })
+    }
+  }
+
+  static async googleAccountLink(req: CustomRequest, res: Response, next: NextFunction) {
+    try {
+      const { email, uid, displayName, phoneNumber } = req.body as GoogleLinkRequest
+
+      if (!email || !uid || !displayName) {
+        throw new BadRequest("Details Not received from Google")
+      }
+
+      const userbasedonUid = await UserModel.findOne({ uid })
+      if (userbasedonUid) {
+        return res.json({
+          token: JwtHelper.createToken({ id: userbasedonUid._id }),
+        })
+      }
+
+      const user = await UserModel.findOne({ email })
+      if (!user) {
+        const newUser = await UserModel.create({
+          email,
+          username: displayName,
+          mobile: phoneNumber,
+          uid,
+        })
+        return res.json({
+          token: JwtHelper.createToken({ id: newUser._id }),
+        })
+      }
+
+      if (!user.uid) {
+        user.uid = uid
+        await user.save()
+      }
+
+      return res.json({
+        token: JwtHelper.createToken({ id: user._id }),
+      })
     } catch (error) {
       console.log(error)
       return res.status(500).json({ error: "Internal server error" })
@@ -93,6 +134,7 @@ export class AuthController {
       next(error)
     }
   }
+
   static async resetPassword(req: CustomRequest, res: Response, next: NextFunction) {
     try {
       const { email, password, otp } = req.body
@@ -119,6 +161,6 @@ export class AuthController {
       })
     } catch (error) {
       next(error)
-    }
-  }
+    }
+  }
 }

@@ -25,7 +25,6 @@ var userSchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
   },
   province: {
     type: String,
@@ -48,6 +47,9 @@ var userSchema = new Schema({
       ref: "Products",
     },
   ],
+  uid: {
+    type: String //Google uid of user
+  },
   bids: [
     {
       type: Schema.Types.ObjectId,

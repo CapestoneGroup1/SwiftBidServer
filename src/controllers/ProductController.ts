@@ -7,7 +7,11 @@ import { isFileAcceptable, isUserRoleAdmin } from "../utils/commonUtils"
 import { EmailConfig } from "../config/EmailConfig"
 import { UserModel } from "../models/user"
 import { approvalEmailContent, rejectionEmailContent } from "../utils/mailTemplates"
-import { chargeUserForPurchase, getProductBids, getProductBidsOnly } from "../services/ProductService"
+import {
+  chargeUserForPurchase,
+  getProductBids,
+  getProductBidsOnly,
+} from "../services/ProductService"
 import { WinnerModel } from "../models/winners"
 import { getUserProfile } from "../services/UserServices"
 import { chargeUserCard } from "../services/StripeService"
@@ -173,6 +177,15 @@ export class ProductController {
           select: "-password -otp", // Exclude password and otp fields
         })
         .populate("category")
+      res.status(200).json(data)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  static async getAllWinners(req: CustomRequest, res: Response, next: NextFunction) {
+    try {
+      const data = await WinnerModel.find({}).populate("productid").populate("userid")
       res.status(200).json(data)
     } catch (error) {
       next(error)

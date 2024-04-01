@@ -111,3 +111,10 @@ export interface CardDetails {
   name: string
   brand: string
 }
+
+export interface GoogleLinkRequest {
+  uid: string,
+  email: string,
+  displayName: string
+  phoneNumber: string
+}
