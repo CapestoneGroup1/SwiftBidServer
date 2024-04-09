@@ -45,7 +45,7 @@ export class BidController {
 
       if (bidprice <= productDetails.price) {
         throw new BadRequest(
-          "Unable to place bid. Please set an active payment card as your primary card in your account settings.",
+          "Bid Price is not accepted, it should be grater than higest bid",
         )
       }
 
