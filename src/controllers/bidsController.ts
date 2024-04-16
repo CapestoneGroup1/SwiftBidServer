@@ -43,7 +43,7 @@ export class BidController {
         throw new BadRequest("These is no Active Payment card set in your Account")
       }
 
-      if (bidprice <= productDetails.price) {
+      if (bidprice < productDetails.price) {
         throw new BadRequest(
           "Bid Price is not accepted, it should be grater than higest bid",
         )
